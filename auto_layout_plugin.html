@@ -222,8 +222,7 @@
             },
             "elkjs_box": {
                 "algorithm": "org.eclipse.elk.box",
-                "childAreaHeight": 3000,
-                "childAreaWidth": 3000
+                "org.eclipse.elk.spacing.nodeNode": 20
             },
             "pull_request_2267": {
                 // TODO
@@ -243,7 +242,6 @@
         // If not found previously, let's go find it
         if (globalAutoLayoutConfigNode === null) {
             var configNodes = [];
-            console.log("=======================> HIER configNodes via eachConfig nodig")
             RED.nodes.eachConfig(function(configNode) {
                 if (configNode.type === 'auto_layout_config') { 
                     configNodes.push(configNode); 
@@ -254,7 +252,7 @@
             while (configNodes.length > 1) {
                 var configNode = configNodes.pop();
                 RED.nodes.remove(configNode.id);
-                RED.nodes.dirty(true);
+                // RED.nodes.dirty(true);
             }
 
             // When we found a config node, let's use that one
@@ -286,7 +284,7 @@
             RED.nodes.add(globalAutoLayoutConfigNode);
 
             // Make sure the "Deploy" button becomes active
-            RED.nodes.dirty(true);
+            // RED.nodes.dirty(true);
         }
     }
 
@@ -580,13 +578,13 @@
         });
 
         // Show the algorithm settings as json in a typedinput element (in the sidebar)
-        $("#node-input-settings").typedInput({
+        $("#auto-layout-node-input-settings").typedInput({
             default: 'json',
             types:['json']
         });
 
         // When the algorithm properties are changed in the sidebar, then store them into the config node
-        $("#node-input-settings").on("change", function() {
+        $("#auto-layout-node-input-settings").on("change", function() {
             ensureAutoLayoutConfigNode();
 
             let currentAlgorithmSettings = $(this).typedInput('value');
@@ -598,12 +596,12 @@
                 let settingsObj = JSON.parse(globalAutoLayoutConfigNode.settings);
                 settingsObj[currentAlgorithm] = JSON.parse(currentAlgorithmSettings);
                 globalAutoLayoutConfigNode.settings = JSON.stringify(settingsObj);
-                RED.nodes.dirty(true);
+                //RED.nodes.dirty(true);
             //}
         })
 
         // When the algorithm is changed in the sidebar, then store it into the config node
-        $("#node-input-algorithm").on("change", function() {
+        $("#auto-layout-node-input-algorithm").on("change", function() {
             ensureAutoLayoutConfigNode();
 
             let currentAlgorithm = $(this).val();
@@ -613,12 +611,12 @@
             // Remark: don't check the input type (i.e. use != instead of  !==) because we will get the number values as strings...
             if (globalAutoLayoutConfigNode.algorithm != currentAlgorithm) {
                 globalAutoLayoutConfigNode.algorithm = currentAlgorithm;
-                RED.nodes.dirty(true);
+                //RED.nodes.dirty(true);
             }
             
-            $("#node-input-settings").typedInput('value', JSON.stringify(currentAlgorithmSettings));
+            $("#auto-layout-node-input-settings").typedInput('value', JSON.stringify(currentAlgorithmSettings));
         })
-        $("#node-input-algorithm").change();
+        $("#auto-layout-node-input-algorithm").change();
 
         $("#auto-layout-button").click( executeAutoLayout );
 
@@ -639,23 +637,25 @@
 </script>
 
 <script type="text/x-red" data-template-name="auto_layout_sidebar">
-    <div style="position: relative; height: 100%; margin: 15px;">
-        <label for="node-input-algorithm" style="margin-top: 25px"><i class="fa fa-terminal"></i> Algorithm</label>
-        <select id="node-input-algorithm">
-            <option value="dagre_lr">Dagre LR</option>
-            <option value="dagre_longest_path">Dagre Longest Path</option>
-            <option value="elkjs_mr_tree">ELKjs Mr. Tree</option>
-            <option value="elkjs_layered_upwards">ELKjs Layered Upwards</option>
-            <option value="elkjs_layered_downwards">ELKjs Layered Downwards</option>
-            <option value="elkjs_box">ELKjs Box</option>
-            <option value="pull_request_2267">Pull Request 2267</option></select>
-        </select>
+    <div style="position: relative; height: 100%; overflow-y: auto;">
+        <div style="position: relative; height: 100%; margin: 15px;">
+            <label for="auto-layout-node-input-algorithm" style="margin-top: 25px"><i class="fa fa-terminal"></i> Algorithm</label>
+            <select id="auto-layout-node-input-algorithm">
+                <option value="dagre_lr">Dagre LR</option>
+                <option value="dagre_longest_path">Dagre Longest Path</option>
+                <option value="elkjs_mr_tree">ELKjs Mr. Tree</option>
+                <option value="elkjs_layered_upwards">ELKjs Layered Upwards</option>
+                <option value="elkjs_layered_downwards">ELKjs Layered Downwards</option>
+                <option value="elkjs_box">ELKjs Box</option>
+                <option value="pull_request_2267">Pull Request 2267</option></select>
+            </select>
 
-        <label for="node-input-settings" style="margin-top: 15px"><i class="fa fa-cog"></i> Settings</label>
-        <input type="text" id="node-input-settings" style="width: 100%; margin-top: 30px">
-        
-        <button type="button" id="auto-layout-button" style="font-size: larger;width:100%;background-color: yellowgreen;color:white;border: none;height: 32px;margin-top: 30px;">Execute auto-layout</button>
+            <label for="auto-layout-node-input-settings" style="margin-top: 15px"><i class="fa fa-cog"></i> Settings</label>
+            <input type="text" id="auto-layout-node-input-settings" style="width: 100%; margin-top: 30px">
+            
+            <button type="button" id="auto-layout-button" style="font-size: larger;width:100%;background-color: yellowgreen;color:white;border: none;height: 32px;margin-top: 30px;">Execute auto-layout</button>
 
-        <button type="button" id="auto-layout-revert-button" style="font-size: smaller;width:50%;background-color: rgb(225, 119, 129); color: rgb(246, 246, 246); border: 1px solid rgb(173, 22, 37); height: 32px; margin-top: 30px;"><i class="fa fa-undo"></i> Undo</button>
+            <button type="button" id="auto-layout-revert-button" style="font-size: smaller;width:50%;background-color: rgb(225, 119, 129); color: rgb(246, 246, 246); border: 1px solid rgb(173, 22, 37); height: 32px; margin-top: 30px;"><i class="fa fa-undo"></i> Undo</button>
+        </div>
     </div>
 </script>
