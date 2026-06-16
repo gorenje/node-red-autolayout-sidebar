@@ -632,13 +632,13 @@
             RED.view.select(sle);
         })
 
-        // do this here because when the runtime-state event is triggered, our 
+        // do this here because when the flows:loaded event is triggered, our 
         // config node is ready to be used to fill in the form default values.
         let fillInSidebarForm = () => {
-            RED.events.off('runtime-state', fillInSidebarForm )
+            RED.events.off('flows:loaded', fillInSidebarForm )
             $("#auto-layout-node-input-algorithm").change();
         }
-        RED.events.on('runtime-state', fillInSidebarForm )
+        RED.events.on('flows:loaded', fillInSidebarForm )
     };
 
     RED.plugins.registerPlugin("autolayout-sidebar-plugin", { onadd: dothisOneTimePlease });
